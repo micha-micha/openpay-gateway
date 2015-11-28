@@ -39,7 +39,7 @@ post '/payment' do
 end
 
 post '/webhook' do
-  puts request_payload
+  request_payload[:verification_code]
 end
 
 private
