@@ -11,13 +11,29 @@ end
 post '/payment' do
   params = @request_payload
   charges = openpay.create(:charges)
-  request_hash = {
-    "method" => "card",
-    "source_id" => params[:token_id],
-    "amount" => params[:amount],
-    "description" => params[:description],
-    "device_session_id" => params[:device_session_id]
-  }
+  case params[:method]
+  when "card"
+    request_hash = {
+      "method" => params[:method],
+      "source_id" => params[:token_id],
+      "amount" => params[:amount],
+      "description" => params[:description],
+      "device_session_id" => params[:device_session_id]
+    }
+  when "store"
+    request_hash = {
+      "method" => params[:method],
+      "amount" => params[:amount],
+      "description" => params[:description],
+      "device_session_id" => params[:device_session_id]
+    }
+  when "bank_account"
+    request_hash={
+     "method" => "bank_account",
+     "amount" => params[:amount],
+     "description" => params[:description],
+     "order_id" => params[:order_id]
+   }
 
   response_hash = charges.create(request_hash.to_hash)
 end
