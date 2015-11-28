@@ -3,13 +3,13 @@ require 'openpay'
 require 'json'
 
 before do
-  request.body.rewind
-  @request_payload = JSON.parse request.body.read
+  request_payload
+  openpay
 end
 
 
 post '/payment' do
-  params = @request_payload
+  params = request_payload
   charges = openpay.create(:charges)
   case params[:method]
   when "card"
@@ -38,7 +38,32 @@ post '/payment' do
   response_hash = charges.create(request_hash.to_hash)
 end
 
+post '/webhook' do
+  puts request_payload
+end
+
+private
 
 def openpay options = {}
   agent = OpenpayApi.new('mtmwhkvledzx2mfoqkej', 'sk_e92711454aba4340b8dba66865d0c3d9')
+end
+
+def request_payload
+  request.body.rewind
+  request_payload = JSON.parse request.body.read
+end
+
+def disperse_funds request_payload, options={}
+  payouts = openpay.create(:payouts)
+  bank_account_hash={
+       "holder_name" => params[:holder_name]
+       "clabe" => params[:clabe]
+     }
+  request_hash={
+       "method" => "bank_account",
+       "bank_account" => bank_account_hash,
+       "amount" => params[:amount],
+       "description" => params[:description]
+     }
+  response_hash = payouts.create(request_hash.to_hash)
 end
