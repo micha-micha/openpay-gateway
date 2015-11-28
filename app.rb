@@ -34,6 +34,7 @@ post '/payment' do
      "description" => params[:description],
      "order_id" => params[:order_id]
    }
+  end
 
   response_hash = charges.create(request_hash.to_hash)
 end
@@ -56,7 +57,7 @@ end
 def disperse_funds request_payload, options={}
   payouts = openpay.create(:payouts)
   bank_account_hash={
-       "holder_name" => params[:holder_name]
+       "holder_name" => params[:holder_name],
        "clabe" => params[:clabe]
      }
   request_hash={
